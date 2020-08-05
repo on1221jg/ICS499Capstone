@@ -8,6 +8,7 @@ import android.app.Application;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /*
  * FileCabinet Class works as the context class for the state pattern
@@ -18,6 +19,7 @@ public class FileCabinet extends Application {
     private User dfcUser;
     private ArrayList<Document> document;
     private Context context;
+    private HashMap<String, Integer> docNameHash;
 
     /* The instances of each state the file cabinet can be in */
 
@@ -89,5 +91,12 @@ public class FileCabinet extends Application {
     }
     public void setDfcHelper(DFCAccountDBHelper dfcHelper) {
         this.dfcHelper = dfcHelper;
+    }
+
+    public HashMap<String, Integer> getDocNameHash(){
+        return docNameHash;
+    }
+    public void setDocNameHash(HashMap docNameHash){
+        this.docNameHash = docNameHash;
     }
 }

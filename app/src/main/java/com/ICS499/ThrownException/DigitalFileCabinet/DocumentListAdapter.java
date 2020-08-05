@@ -4,13 +4,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
-public class DocumentListAdapter extends RecyclerView.Adapter<DocumentListAdapter.ViewHolder> {
+public class DocumentListAdapter extends RecyclerView.Adapter<DocumentListAdapter.ViewHolder>
+        implements Filterable {
 
     private static final String TAG = "DocumentListAdapter";
     private ArrayList<Document> docList;
@@ -56,6 +60,7 @@ public class DocumentListAdapter extends RecyclerView.Adapter<DocumentListAdapte
         return docList.get(id);
     }
 
+
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 //        final TextView documentName;
@@ -82,5 +87,44 @@ public class DocumentListAdapter extends RecyclerView.Adapter<DocumentListAdapte
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            ArrayList<Document> docListFiltered;
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    ArrayList<Document> docListFiltered = docList;
+                } else {
+                    ArrayList<Document> filteredList = new ArrayList<>();
+                    for (int i = 0; i < docList.size(); i++) {
+                        Document doc;
+                        doc = docList.get(i);
+
+                        // name match condition.
+                        if (doc.getDocumentName().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(doc);
+                        }
+                    }
+
+                    docListFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = docListFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                docListFiltered = (ArrayList<Document>) filterResults.values;
+
+                // refresh the list with filtered data
+                notifyDataSetChanged();
+            }
+        };
     }
 }

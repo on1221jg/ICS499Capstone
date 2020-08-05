@@ -11,6 +11,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+
+import org.w3c.dom.DocumentType;
 
 /**
  * The digital file cabinet start here at the login UI
@@ -56,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 /* Check if the database has a user store, if so disable this activity */
-                if(account.isUserRegistered(dbHelper)) {
+                if (account.isUserRegistered(dbHelper)) {
                     Toast.makeText(myContext, "Please sign in! An account is registered",
                             Toast.LENGTH_LONG).show();
-                }else {
+                } else {
                     /* Switch the context to the create activity view */
                     Intent createAccountIntent = new Intent(myContext, CreateAccountActivity.class);
                     cabinet.setEditAccount(account);
@@ -79,20 +85,22 @@ public class MainActivity extends AppCompatActivity {
                 emailEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
-                    try {
-                        if(!model.validateEmailField(emailEditText.getText().toString())) {
-                            emailEditText.setError(EMAIL_ERROR);
+                        try {
+                            if (!model.validateEmailField(emailEditText.getText().toString())) {
+                                emailEditText.setError(EMAIL_ERROR);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     }
                 });
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // TODO Auto-generated method stub
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 emailEditText.requestFocus();
@@ -103,13 +111,13 @@ public class MainActivity extends AppCompatActivity {
         passwordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-            try {
-                if(!model.validatePwdField(passwordEditText.getText().toString())) {
-                    passwordEditText.setError(PASSWORD_ERROR);
+                try {
+                    if (!model.validatePwdField(passwordEditText.getText().toString())) {
+                        passwordEditText.setError(PASSWORD_ERROR);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             }
         });
         /* Enter key press event handler */
@@ -117,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                   return signInButton.requestFocus();
+                    return signInButton.requestFocus();
                 }
                 return false;
             }
@@ -139,11 +147,11 @@ public class MainActivity extends AppCompatActivity {
                         Intent homeActivityIntent = new Intent(myContext, DFCHomeActivity.class);
                         startActivity(homeActivityIntent);
                         Toast.makeText(myContext, "Welcome!", Toast.LENGTH_LONG).show();
-                    }else {
+                    } else {
                         passwordEditText.setText("");
                         Toast.makeText(myContext, "Login Fail! Please try again", Toast.LENGTH_LONG).show();
                     }
-                }else {
+                } else {
                     emailEditText.setError("Required!");
                     passwordEditText.setError("Required!");
                     Toast.makeText(myContext, "Please Provide inputs", Toast.LENGTH_LONG).show();
@@ -174,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         dbHelper.close();
     }
+
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);

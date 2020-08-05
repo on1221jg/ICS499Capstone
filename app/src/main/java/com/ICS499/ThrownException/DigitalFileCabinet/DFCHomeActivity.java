@@ -5,6 +5,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,11 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * UI class and home of the digital file cabinet
@@ -56,6 +61,11 @@ public class DFCHomeActivity extends AppCompatActivity implements DocumentListAd
 
         /* Set up the document recycler view */
         ArrayList<Document> docList = dfcBrowser.makeQuery();
+        HashMap<String,Integer> docNames = new HashMap<String, Integer>();
+        for(int index = 0; index < docList.size(); index++){
+            docNames.put(docList.get(index).getDocumentName(), index);
+        }
+        cabinet.setDocNameHash(docNames);
         if(docList.isEmpty()){
             emptyDocImageView.setVisibility(ImageView.VISIBLE);
             emptyDocTextView.setVisibility(TextView.VISIBLE);
@@ -161,5 +171,26 @@ public class DFCHomeActivity extends AppCompatActivity implements DocumentListAd
         startActivity(documentViewIntent);
         Log.d(TAG, adapter.getItem(position).getDocumentID()+"");
 //        Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
+        MenuItem item = menu.findItem(R.id.docList);
+        SearchView searchView = (SearchView) item.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 }
