@@ -7,13 +7,14 @@ package com.ICS499.ThrownException.DigitalFileCabinet;
 import android.app.Application;
 import android.content.Context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
  * FileCabinet Class works as the context class for the state pattern
  */
-public class FileCabinet extends Application {
+public class FileCabinet extends Application implements Serializable {
     /* Instance variables */
     private static FileCabinet cabinet;
     private User dfcUser;
@@ -22,7 +23,6 @@ public class FileCabinet extends Application {
     private HashMap<String, Integer> docNameHash;
 
     /* The instances of each state the file cabinet can be in */
-
     private EditAccount editAccount;
     private EditDocument editDocument;
     private FileBrowser fileBrowser;
@@ -31,6 +31,7 @@ public class FileCabinet extends Application {
 
     private FileCabinet(Context context) {
         this.context = context.getApplicationContext();
+        dfcHelper = new DFCAccountDBHelper(context);
     }
 
     /* Singleton getInstance method */
@@ -50,7 +51,6 @@ public class FileCabinet extends Application {
     }
 
     public ArrayList<Document> getDocument() {
-
         return document;
     }
 
